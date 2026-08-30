@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4568048318106761118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2630916502491104837}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2630916502491104837
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4568048318106761118}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5674703700854502165}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7395714268077157468
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,8 +159,11 @@ GameObject:
   - component: {fileID: 5979313480526207667}
   - component: {fileID: 7524722943295672058}
   - component: {fileID: 636658263037474620}
+  - component: {fileID: 5982467980115500681}
+  - component: {fileID: -653553628905752104}
+  - component: {fileID: 6646959300220618612}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Player_Flight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,6 +183,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2002942466198943672}
+  - {fileID: 2630916502491104837}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3021201477325212656
@@ -215,8 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abfc52c6a44461843aaaa38aca68a3cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CS_PlayerInputReader
-  _dashDoubleTapWindow: 0.25
-  _dashDirectionMatchThreshold: 0.8
+  _dashInputThreshold: 0.5
 --- !u!114 &7524722943295672058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,3 +277,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CS_PlayerMoverFlight
   _flightDataAsset: {fileID: 11400000, guid: 0ddd7241e86025941b750535de522852, type: 2}
+--- !u!114 &5982467980115500681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7793385003019745600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aace391958740c245abba2f1d2900718, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CS_AimController
+  _camera: {fileID: 0}
+  _fireOrigin: {fileID: 2630916502491104837}
+--- !u!114 &-653553628905752104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7793385003019745600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74f7d4b732b50ba41b3ee3466a0ded22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CS_BasicAttackController
+  _aimController: {fileID: 5982467980115500681}
+  _skillController: {fileID: 6646959300220618612}
+  _bulletData: {fileID: 11400000, guid: 8a9edac9f61e6234385443d0f547eed6, type: 2}
+  _bulletPool: {fileID: 0}
+  _fireOrigin: {fileID: 2630916502491104837}
+  _fireInterval: 0.2
+--- !u!114 &6646959300220618612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7793385003019745600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1520fdd58d80e864d94e3813c7439f36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CS_BarrageSkillController
