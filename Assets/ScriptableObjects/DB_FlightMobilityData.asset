@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bf08433191d7ef49a7944dbcdadbb3d, type: 3}
+  m_Name: DB_FlightMobilityData
+  m_EditorClassIdentifier: Assembly-CSharp::CS_FlightMobilityData
+  moveSpeed: 5
+  jumpPower: 5
+  gravity: -9.81
+  dashSpeed: 15
+  dashDuration: 0.5
+  dashCooldown: 1
+  doubleJumpWindow: 0.5
+  flyAscendSpeed: 3
+  flyDescendSpeed: 2
