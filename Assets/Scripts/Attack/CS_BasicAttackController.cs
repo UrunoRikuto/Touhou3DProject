@@ -13,7 +13,7 @@ public class CS_BasicAttackController : MonoBehaviour
     private CS_BarrageSkillController _skillController;
 
     [SerializeField]
-    private CS_BulletData _bulletData;
+    private CSO_BulletData _bulletData;
 
     [SerializeField]
     private CS_BulletPool _bulletPool;

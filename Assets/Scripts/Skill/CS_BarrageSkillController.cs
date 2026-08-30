@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// スキル弾幕を管理するコンポーネント。
@@ -13,11 +14,31 @@ public class CS_BarrageSkillController : MonoBehaviour
     /// </summary>
     public bool isBarrageActive { get; private set; }
 
+    private CS_PlayerInputReader _inputReader;
+
     private void Start()
     {
         // 初期状態は非発動
         isBarrageActive = false;
+        _inputReader = GetComponent<CS_PlayerInputReader>();
     }
 
-    // 将来の実装用: スキル発動メソッドやコスト管理ロジック等を追加予定
+    private void Update()
+    {
+        if (_inputReader.skillInput[0])
+        {
+
+        }
+        else if (_inputReader.skillInput[1])
+        {
+
+        }
+        else if (_inputReader.skillInput[2])
+        {
+
+        }
+
+        // スキル入力がいずれか押されている場合は弾幕発動中とみなす
+        isBarrageActive = _inputReader.skillInput[0] || _inputReader.skillInput[1] || _inputReader.skillInput[2];
+    }
 }

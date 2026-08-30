@@ -21,6 +21,9 @@ public class CS_PlayerInputReader : MonoBehaviour
 
     public bool descendHeld => _controls.Player.Descend.IsPressed();
 
+    private bool[] _skillInput = new bool[3];
+    public bool[] skillInput => _skillInput;
+
     public event Action<Vector2> onDashTriggered;
 
     [SerializeField]
@@ -56,6 +59,11 @@ public class CS_PlayerInputReader : MonoBehaviour
     protected virtual void Update()
     {
         _moveInput = _controls.Player.Move.ReadValue<Vector2>();
+
+        _skillInput[0] = _controls.Skill.A.IsPressed();
+        _skillInput[1] = _controls.Skill.B.IsPressed();
+        _skillInput[2] = _controls.Skill.C.IsPressed();
+
         CheckDashInput();
     }
 

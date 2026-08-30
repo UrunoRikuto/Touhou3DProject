@@ -7,7 +7,7 @@ using System;
 /// </summary>
 public class CS_Bullet : MonoBehaviour
 {
-    private CS_BulletData _data;
+    private CSO_BulletData _data;
     private Vector3 _direction;
     private float _elapsedTime;
     private Action _returnCallback;
@@ -15,7 +15,7 @@ public class CS_Bullet : MonoBehaviour
     /// <summary>
     /// íeÇèâä˙âªÇµÇ‹Ç∑ÅB
     /// </summary>
-    public void Initialize(CS_BulletData data, Vector3 position, Vector3 direction)
+    public void Initialize(CSO_BulletData data, Vector3 position, Vector3 direction)
     {
         _data = data;
         _direction = direction.normalized;

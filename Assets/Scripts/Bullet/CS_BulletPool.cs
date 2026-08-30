@@ -11,7 +11,7 @@ public class CS_BulletPool : MonoBehaviour
     private int _poolSize = 100;
 
     private Queue<CS_Bullet> _bulletPool = new Queue<CS_Bullet>();
-    private Dictionary<CS_BulletData, Queue<CS_Bullet>> _poolsByData = new Dictionary<CS_BulletData, Queue<CS_Bullet>>();
+    private Dictionary<CSO_BulletData, Queue<CS_Bullet>> _poolsByData = new Dictionary<CSO_BulletData, Queue<CS_Bullet>>();
 
     private void Awake()
     {
@@ -30,7 +30,7 @@ public class CS_BulletPool : MonoBehaviour
     /// <summary>
     /// 指定位置・方向に弾を1発発射します。
     /// </summary>
-    public void Fire(CS_BulletData data, Vector3 position, Vector3 direction)
+    public void Fire(CSO_BulletData data, Vector3 position, Vector3 direction)
     {
         CS_Bullet bullet = GetOrCreateBullet(data);
         bullet.Initialize(data, position, direction);
@@ -40,7 +40,7 @@ public class CS_BulletPool : MonoBehaviour
     /// <summary>
     /// プールから弾を取得するか、新しく生成します。
     /// </summary>
-    private CS_Bullet GetOrCreateBullet(CS_BulletData data)
+    private CS_Bullet GetOrCreateBullet(CSO_BulletData data)
     {
         // データ別のプールが存在しない場合は作成
         if (!_poolsByData.ContainsKey(data))
@@ -91,7 +91,7 @@ public class CS_BulletPool : MonoBehaviour
     /// <summary>
     /// 使用済みの弾をプールに戻します。
     /// </summary>
-    private void ReturnBullet(CS_Bullet bullet, CS_BulletData data)
+    private void ReturnBullet(CS_Bullet bullet, CSO_BulletData data)
     {
         bullet.gameObject.SetActive(false);
         _poolsByData[data].Enqueue(bullet);

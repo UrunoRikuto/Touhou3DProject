@@ -4,7 +4,7 @@ using UnityEngine;
 /// 弾の基本パラメータを定義するScriptableObject。
 /// </summary>
 [CreateAssetMenu(menuName = "Bullet/Basic Attack Data", fileName = "BulletData_Basic")]
-public class CS_BulletData : ScriptableObject
+public class CSO_BulletData : ScriptableObject
 {
     /// <summary>
     /// 弾の移動速度。
