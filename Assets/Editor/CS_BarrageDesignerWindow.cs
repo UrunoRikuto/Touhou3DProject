@@ -749,22 +749,17 @@ public class CS_BarrageDesignerWindow : EditorWindow
             if (!_previewSnapshots.ContainsKey(path.transform)) continue;
 
             var so = new SerializedObject(path);
-            SerializedProperty waypointsProp = so.FindProperty("_localWaypoints");
-            if (waypointsProp.arraySize < 2) continue;
-
-            var waypoints = new Vector3[waypointsProp.arraySize];
-            for (int i = 0; i < waypoints.Length; i++)
-            {
-                waypoints[i] = waypointsProp.GetArrayElementAtIndex(i).vector3Value;
-            }
+            var curveX = so.FindProperty("_curveX").animationCurveValue;
+            var curveY = so.FindProperty("_curveY").animationCurveValue;
+            var curveZ = so.FindProperty("_curveZ").animationCurveValue;
             bool loop = so.FindProperty("_loop").boolValue;
             bool alignToDirection = so.FindProperty("_alignToDirection").boolValue;
             float pathDuration = Mathf.Max(0.01f, so.FindProperty("_duration").floatValue);
 
             float t = time / pathDuration;
-            t = loop ? t % 1f : Mathf.Clamp01(t);
+            t = loop ? Mathf.Repeat(t, 1f) : Mathf.Clamp01(t);
 
-            Vector3 localPos = CS_GeneratorPath.EvaluatePathStatic(waypoints, loop, t, out Vector3 direction);
+            Vector3 localPos = CS_GeneratorPath.EvaluateCurvePathStatic(curveX, curveY, curveZ, t, out Vector3 direction);
             path.transform.localPosition = localPos;
             if (alignToDirection && direction.sqrMagnitude > 0.0001f)
             {

@@ -1,23 +1,36 @@
 using UnityEngine;
 
 /// <summary>
-/// 発生源(Generator)を、あらかじめ配置したウェイポイント(点)を結ぶ経路に沿って移動させる
-/// コンポーネント。エディタ上で「点を置いて線でつなぐ」ように弾幕の軌道を直感的にデザインできる
-/// (専用インスペクタ CS_GeneratorPathEditor がSceneビュー上での編集を担当する。
-/// CS_BarrageDesignerWindowのパラメータパネル/プレビューからも扱える)。
+/// 発生源(Generator)を、AnimationCurveで指定したローカルX/Y/Z座標の時間変化に沿って
+/// 移動させるコンポーネント。Unity標準のInspector上のカーブエディタ(AnimationCurveの
+/// ミニプレビュー→クリックで開くカーブエディタウィンドウ)でそのまま編集できるため、
+/// 専用のSceneビュー編集ツール(点をクリックして配置する方式)を別途用意する必要がない。
 ///
 /// CS_GeneratorRotator(定速回転)/ CS_GeneratorOscillator(往復回転)と並ぶ、
 /// 3つ目のGenerator用モーションコンポーネント。CS_BarragePatternが他の2つと同様に
-/// まとめて有効/無効化する。
+/// まとめて有効/無効化する。CS_BarrageDesignerWindowのパラメータパネルは
+/// SerializedPropertyを汎用的に列挙して描画する仕組みのため、AnimationCurveフィールドも
+/// 追加のコード無しでそのまま編集できる。
 ///
-/// 注意: _alignToDirection を有効にすると進行方向へ自動的に向きを揃えるため、
-/// 同じGameObjectにCS_GeneratorRotator/CS_GeneratorOscillatorを同時に付けると
-/// 回転の取り合いになる。両方使いたい場合は、このコンポーネントを親Generatorに、
-/// 回転系コンポーネントを子(マズル)に分けて付けること。
+/// 設計変更履歴(2026-08-31): 当初はSceneビュー上で点をクリックして配置する方式
+/// (ウェイポイント配列+専用エディタCS_GeneratorPathEditor)だったが、専用エディタが
+/// プロジェクト側で認識されない事象が出たため、Unity標準機能(AnimationCurve)だけで
+/// 完結する方式に変更した。専用エディタ(CS_GeneratorPathEditor.cs)はもう使わないため
+/// プロジェクトから削除してよい。
+///
+/// 使い方:
+///   1. Generator(空のGameObject)にこのコンポーネントを付けて選択する
+///   2. Inspectorに表示される _curveX / _curveY / _curveZ の3本のカーブをクリックして開き、
+///      各軸の「時間(横軸 0〜1) → ローカル座標の変化量(縦軸)」をカーブとして描く
+///      (例: 円軌道にしたいなら _curveX にcos波形、_curveZ にsin波形に近いカーブを作る。
+///       Unityの右クリックメニューから「Add Key」でキーを打ち、ハンドルで滑らかに調整できる)
+///   3. _duration(1周の秒数)/ _loop(ループするか)/ _alignToDirection(進行方向を向くか)を設定する
 /// </summary>
 public class CS_GeneratorPath : MonoBehaviour
 {
-    [SerializeField] private Vector3[] _localWaypoints = new Vector3[0];
+    [SerializeField] private AnimationCurve _curveX = AnimationCurve.Linear(0f, 0f, 1f, 0f);
+    [SerializeField] private AnimationCurve _curveY = AnimationCurve.Linear(0f, 0f, 1f, 0f);
+    [SerializeField] private AnimationCurve _curveZ = AnimationCurve.Linear(0f, 0f, 1f, 0f);
     [SerializeField] private float _duration = 4f;
     [SerializeField] private bool _loop = true;
     [SerializeField] private bool _alignToDirection = true;
@@ -34,21 +47,14 @@ public class CS_GeneratorPath : MonoBehaviour
 
     private void Update()
     {
-        if (_localWaypoints == null || _localWaypoints.Length < 2 || _duration <= 0f) return;
+        if (_duration <= 0f) return;
 
         _elapsedTime += Time.deltaTime;
 
         float t = _elapsedTime / _duration;
-        if (_loop)
-        {
-            t %= 1f;
-        }
-        else
-        {
-            t = Mathf.Clamp01(t);
-        }
+        t = _loop ? Mathf.Repeat(t, 1f) : Mathf.Clamp01(t);
 
-        Vector3 localPos = EvaluatePath(t, out Vector3 direction);
+        Vector3 localPos = EvaluateCurvePathStatic(_curveX, _curveY, _curveZ, t, out Vector3 direction);
 
         if (transform.parent != null)
         {
@@ -65,69 +71,31 @@ public class CS_GeneratorPath : MonoBehaviour
         }
     }
 
-    /// <summary>0〜1の経路上の位置を、各区間の長さに応じた等速で評価する(インスタンス用の薄いラッパー)。</summary>
-    private Vector3 EvaluatePath(float t, out Vector3 direction)
-    {
-        return EvaluatePathStatic(_localWaypoints, _loop, t, out direction);
-    }
-
     /// <summary>
-    /// ウェイポイント配列上の0〜1の位置tを、各区間の長さに応じた等速で評価する。
+    /// X/Y/Zの3本のAnimationCurveを、0〜1の正規化時間tで評価してローカル座標を返す。
+    /// 進行方向は t の前後をわずかにずらして評価した位置の差分から近似する。
     /// CS_BarrageDesignerWindowのEditモードプレビューからも全く同じロジックを使えるように、
-    /// staticかつローカル座標配列のみで完結する形で公開している(ランタイムとプレビューの
+    /// staticかつAnimationCurveのみで完結する形で公開している(ランタイムとプレビューの
     /// 挙動を一致させるための唯一の実装)。
     /// </summary>
-    public static Vector3 EvaluatePathStatic(Vector3[] waypoints, bool loop, float t, out Vector3 direction)
+    public static Vector3 EvaluateCurvePathStatic(AnimationCurve curveX, AnimationCurve curveY, AnimationCurve curveZ, float t, out Vector3 direction)
     {
-        if (waypoints == null || waypoints.Length == 0)
-        {
-            direction = Vector3.forward;
-            return Vector3.zero;
-        }
+        Vector3 pos = EvaluateAt(curveX, curveY, curveZ, t);
 
-        int segmentCount = loop ? waypoints.Length : waypoints.Length - 1;
-        if (segmentCount <= 0)
-        {
-            direction = Vector3.forward;
-            return waypoints[0];
-        }
+        const float epsilon = 0.001f;
+        Vector3 posAhead = EvaluateAt(curveX, curveY, curveZ, Mathf.Min(t + epsilon, 1f));
+        Vector3 posBehind = EvaluateAt(curveX, curveY, curveZ, Mathf.Max(t - epsilon, 0f));
+        Vector3 delta = posAhead - posBehind;
 
-        var segmentLengths = new float[segmentCount];
-        float totalLength = 0f;
+        direction = delta.sqrMagnitude > 0.0000001f ? delta.normalized : Vector3.forward;
+        return pos;
+    }
 
-        for (int i = 0; i < segmentCount; i++)
-        {
-            Vector3 a = waypoints[i];
-            Vector3 b = waypoints[(i + 1) % waypoints.Length];
-            segmentLengths[i] = Vector3.Distance(a, b);
-            totalLength += segmentLengths[i];
-        }
-
-        if (totalLength <= 0.0001f)
-        {
-            direction = Vector3.forward;
-            return waypoints[0];
-        }
-
-        float targetDistance = t * totalLength;
-        float accumulated = 0f;
-
-        for (int i = 0; i < segmentCount; i++)
-        {
-            if (accumulated + segmentLengths[i] >= targetDistance || i == segmentCount - 1)
-            {
-                Vector3 a = waypoints[i];
-                Vector3 b = waypoints[(i + 1) % waypoints.Length];
-                float segT = segmentLengths[i] > 0.0001f
-                    ? Mathf.Clamp01((targetDistance - accumulated) / segmentLengths[i])
-                    : 0f;
-                direction = (b - a).normalized;
-                return Vector3.Lerp(a, b, segT);
-            }
-            accumulated += segmentLengths[i];
-        }
-
-        direction = Vector3.forward;
-        return waypoints[segmentCount];
+    private static Vector3 EvaluateAt(AnimationCurve curveX, AnimationCurve curveY, AnimationCurve curveZ, float t)
+    {
+        float x = curveX != null ? curveX.Evaluate(t) : 0f;
+        float y = curveY != null ? curveY.Evaluate(t) : 0f;
+        float z = curveZ != null ? curveZ.Evaluate(t) : 0f;
+        return new Vector3(x, y, z);
     }
 }

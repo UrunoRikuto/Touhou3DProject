@@ -17,7 +17,7 @@ using UnityEngine;
 /// </summary>
 public class CS_SpellCardPlayer : MonoBehaviour
 {
-    [SerializeField] private CS_SpellCardDefinition _definition;
+    [SerializeField] private List<CS_SpellCardDefinition> _definition;
     [SerializeField] private bool _loop;
 
     /// <summary>スペルカードが終了した(全エントリのendTimeを過ぎた、ループなしの場合)ときに発火。</summary>
@@ -34,14 +34,16 @@ public class CS_SpellCardPlayer : MonoBehaviour
     private readonly List<RuntimeEntry> _runtimeEntries = new List<RuntimeEntry>();
     private float _elapsedTime;
     private bool _isActive;
+    public bool isActive => _isActive;
     private float _totalDuration;
 
     /// <summary>定義済みのスペルカードを再生開始する。既に再生中なら一度停止してから作り直す。</summary>
-    public void Play()
+    [ContextMenu("Play")]
+    public void Play(int index = 0)
     {
         Stop();
 
-        if (_definition == null || _definition.entries == null || _definition.entries.Length == 0)
+        if (_definition == null || _definition[index].entries == null || _definition[index].entries.Length == 0)
         {
             Debug.LogWarning($"{name}: CS_SpellCardPlayerに_definitionが未設定、またはエントリが空です。", this);
             return;
@@ -49,7 +51,7 @@ public class CS_SpellCardPlayer : MonoBehaviour
 
         _totalDuration = 0f;
 
-        foreach (var entry in _definition.entries)
+        foreach (var entry in _definition[index].entries)
         {
             if (entry == null || entry.variationPrefab == null) continue;
 
@@ -57,6 +59,14 @@ public class CS_SpellCardPlayer : MonoBehaviour
             instance.transform.localPosition = entry.positionOffset;
             instance.transform.localRotation = Quaternion.Euler(entry.angle);
             instance.SetActive(false);
+
+            if (entry.overrideFireInterval)
+            {
+                foreach (var emitter in instance.GetComponentsInChildren<CS_BulletEmitter>(true))
+                {
+                    emitter.fireInterval = entry.fireIntervalOverride;
+                }
+            }
 
             var pattern = instance.GetComponent<CS_BarragePattern>();
             if (pattern == null)
@@ -81,6 +91,7 @@ public class CS_SpellCardPlayer : MonoBehaviour
     }
 
     /// <summary>再生を止め、Instantiateした全バリエーションのインスタンスを破棄する。</summary>
+    [ContextMenu("Stop")]
     public void Stop()
     {
         _isActive = false;

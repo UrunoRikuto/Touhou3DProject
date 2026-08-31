@@ -25,4 +25,13 @@ public class CS_SpellCardEntry
 
     /// <summary>任意。スペルカードの原点(CS_SpellCardPlayerの位置)からのローカル位置オフセット。</summary>
     public Vector3 positionOffset;
+
+    /// <summary>trueの場合、このエントリではバリエーションプレハブ本来の発射間隔ではなく、
+    /// fireIntervalOverrideの値を使う。バリエーション本体(プレハブ)は編集せず、
+    /// スペルカード側だけで「このエントリでは連射を速く/遅く」を調整したい場合に使う。</summary>
+    public bool overrideFireInterval;
+
+    /// <summary>overrideFireIntervalがtrueのときに適用する発射間隔(秒)。
+    /// variationPrefab配下の全CS_BulletEmitterに対して、Instantiate直後に一括で上書きする。</summary>
+    public float fireIntervalOverride = 0.2f;
 }

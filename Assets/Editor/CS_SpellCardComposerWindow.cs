@@ -4,9 +4,16 @@ using UnityEngine;
 
 /// <summary>
 /// 複数の弾幕バリエーション(CS_BarragePatternプレハブ。CS_BarrageDesignerWindow等で
-/// 個別に作成・プレハブ化された、シーン配置に依存しないもの)を、いつ・どんな角度で
-/// 再生するかを設定して1つのスペルカード(CS_SpellCardDefinitionアセット)にまとめる
-/// ための専用エディタウィンドウ。
+/// 個別に作成・プレハブ化された、シーン配置に依存しないもの)を、いつ・どんな角度で、
+/// (任意で)どんな発射間隔で再生するかを設定して1つのスペルカード
+/// (CS_SpellCardDefinitionアセット)にまとめるための専用エディタウィンドウ。
+///
+/// 「発射間隔を上書き」(2026-08-31追加): バリエーションプレハブ本体(CS_BulletEmitterの
+/// _fireInterval)は編集せず、このスペルカードのこのエントリでだけ発射間隔を変えたい場合に
+/// チェックを入れて秒数を指定する。実際の上書きはCS_SpellCardPlayer.Play()がInstantiate
+/// 直後に、そのバリエーション配下の全CS_BulletEmitterへ一括で適用する。
+/// チェックを入れた瞬間、「間隔(秒)」欄にはプレハブ本来の発射間隔(上書き前の値、
+/// GetBaseFireIntervalで取得)が初期値として自動で入るので、そこから微調整すればよい。
 ///
 /// CS_BarrageDesignerWindowが「1つのバリエーションの中身」を作るのに対し、
 /// このウィンドウは「完成済みバリエーションをどう組み合わせるか」を扱う、一段上の
@@ -215,6 +222,17 @@ public class CS_SpellCardComposerWindow : EditorWindow
         entry.FindPropertyRelative("endTime").floatValue = 4f;
         entry.FindPropertyRelative("angle").vector3Value = Vector3.zero;
         entry.FindPropertyRelative("positionOffset").vector3Value = Vector3.zero;
+        entry.FindPropertyRelative("overrideFireInterval").boolValue = false;
+        entry.FindPropertyRelative("fireIntervalOverride").floatValue = GetBaseFireInterval(prefab);
+    }
+
+    /// <summary>プレハブ配下の最初のCS_BulletEmitterが持つ発射間隔(上書き前の本来の値)を返す。
+    /// 「発射間隔を上書き」の初期値表示に使う。見つからない場合は0.2fを返す。</summary>
+    private static float GetBaseFireInterval(GameObject prefab)
+    {
+        if (prefab == null) return 0.2f;
+        var emitter = prefab.GetComponentInChildren<CS_BulletEmitter>(true);
+        return emitter != null ? emitter.fireInterval : 0.2f;
     }
 
     private float ComputeDuration(SerializedProperty entriesProp)
@@ -255,6 +273,8 @@ public class CS_SpellCardComposerWindow : EditorWindow
         SerializedProperty endProp = entry.FindPropertyRelative("endTime");
         SerializedProperty angleProp = entry.FindPropertyRelative("angle");
         SerializedProperty offsetProp = entry.FindPropertyRelative("positionOffset");
+        SerializedProperty overrideIntervalProp = entry.FindPropertyRelative("overrideFireInterval");
+        SerializedProperty intervalProp = entry.FindPropertyRelative("fireIntervalOverride");
 
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
@@ -290,6 +310,21 @@ public class CS_SpellCardComposerWindow : EditorWindow
 
             EditorGUILayout.PropertyField(angleProp, new GUIContent("角度(Euler)"));
             EditorGUILayout.PropertyField(offsetProp, new GUIContent("位置オフセット(任意)"));
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(overrideIntervalProp, new GUIContent("発射間隔を上書き"), GUILayout.Width(160));
+                if (EditorGUI.EndChangeCheck() && overrideIntervalProp.boolValue)
+                {
+                    // チェックを入れた瞬間、上書き前(プレハブ本来)の発射間隔を初期値として入れておく
+                    intervalProp.floatValue = GetBaseFireInterval(prefabProp.objectReferenceValue as GameObject);
+                }
+                using (new EditorGUI.DisabledScope(!overrideIntervalProp.boolValue))
+                {
+                    EditorGUILayout.PropertyField(intervalProp, new GUIContent("間隔(秒)"));
+                }
+            }
         }
 
         return true;

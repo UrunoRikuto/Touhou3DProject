@@ -1,5 +1,51 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3364047664927813494
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6323902648316438647}
+  - component: {fileID: 9172559778892758948}
+  m_Layer: 0
+  m_Name: SpellCardPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6323902648316438647
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3364047664927813494}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5674703700854502165}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9172559778892758948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3364047664927813494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53d711d419dfc424db1a139cb8ca77fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CS_SpellCardPlayer
+  _definition: []
+  _loop: 0
 --- !u!1 &4568048318106761118
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,6 +230,7 @@ Transform:
   m_Children:
   - {fileID: 2002942466198943672}
   - {fileID: 2630916502491104837}
+  - {fileID: 6323902648316438647}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3021201477325212656
@@ -309,6 +356,8 @@ MonoBehaviour:
   _bulletPool: {fileID: 0}
   _fireOrigin: {fileID: 2630916502491104837}
   _fireInterval: 0.2
+  _hitTagList:
+  - Enemy
 --- !u!114 &6646959300220618612
 MonoBehaviour:
   m_ObjectHideFlags: 0

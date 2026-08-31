@@ -22,6 +22,11 @@ public class CS_BulletEmitter : MonoBehaviour
 
     [SerializeField]
     private float _fireInterval = 0.2f;
+    public float fireInterval
+    {
+        get => _fireInterval;
+        set => _fireInterval = value;
+    }
 
     [SerializeField]
     private bool _autoFire;

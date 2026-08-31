@@ -16,29 +16,30 @@ public class CS_BarrageSkillController : MonoBehaviour
 
     private CS_PlayerInputReader _inputReader;
 
+    private CS_SpellCardPlayer _spellCardPlayer;
+
     private void Start()
     {
         // ‰Šúó‘Ô‚Í”ñ”­“®
         isBarrageActive = false;
         _inputReader = GetComponent<CS_PlayerInputReader>();
+        _spellCardPlayer = GetComponentInChildren<CS_SpellCardPlayer>();
     }
 
     private void Update()
     {
-        if (_inputReader.skillInput[0])
-        {
-
-        }
-        else if (_inputReader.skillInput[1])
-        {
-
-        }
-        else if (_inputReader.skillInput[2])
-        {
-
-        }
-
         // ƒXƒLƒ‹“ü—Í‚ª‚¢‚¸‚ê‚©‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í’e–‹”­“®’†‚Æ‚İ‚È‚·
-        isBarrageActive = _inputReader.skillInput[0] || _inputReader.skillInput[1] || _inputReader.skillInput[2];
+        isBarrageActive = _spellCardPlayer.isActive;
+
+        if (_spellCardPlayer.isActive) return;
+
+        for (int i = 0; i < _inputReader.skillInput.Length; i++)
+        {
+            if (_inputReader.skillInput[i])
+            {
+                _spellCardPlayer.Play(i);
+                break;
+            }
+        }
     }
 }
