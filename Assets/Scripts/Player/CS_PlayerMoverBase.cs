@@ -27,6 +27,13 @@ public abstract class CS_PlayerMoverBase : MonoBehaviour
     protected MovementState _state = MovementState.Grounded;
     protected float _verticalVelocity = 0f;
 
+    /// <summary>
+    /// 移動方向の基準にするカメラのTransform(カメラ相対移動用)
+    /// 未設定の場合はAwakeでCamera.mainから自動取得を試みる
+    /// </summary>
+    [SerializeField]
+    private Transform _cameraTransform;
+
     private bool _clampToBounds = false;
     private Vector2 _boundsMinXZ = Vector2.zero;
     private Vector2 _boundsMaxXZ = Vector2.zero;
@@ -40,6 +47,11 @@ public abstract class CS_PlayerMoverBase : MonoBehaviour
     protected virtual void Awake()
     {
         _controller = GetComponent<CharacterController>();
+
+        if (_cameraTransform == null && Camera.main != null)
+        {
+            _cameraTransform = Camera.main.transform;
+        }
     }
 
     /// <summary>
@@ -100,7 +112,12 @@ public abstract class CS_PlayerMoverBase : MonoBehaviour
             return;
         }
 
-        _dashDirection = new Vector3(direction.x, 0f, direction.y).normalized;
+        // カメラの向きを正面としたダッシュ方向に変換する
+        Vector3 cameraRelativeDirection = ComputeCameraRelativeDirection(direction);
+        _dashDirection = cameraRelativeDirection.sqrMagnitude > 0.0001f
+            ? cameraRelativeDirection.normalized
+            : transform.forward;
+
         _dashTimeRemaining = _mobilityData.dashDuration;
         _dashCooldownRemaining = _mobilityData.dashCooldown;
     }
@@ -119,10 +136,11 @@ public abstract class CS_PlayerMoverBase : MonoBehaviour
 
     /// <summary>
     /// 水平移動量の計算
+    /// カメラの向いている方向を正面(奥)として、入力方向をワールド空間に変換する
     /// </summary>
     protected virtual Vector3 ComputeHorizontalDelta(Vector2 moveInput, float deltaTime)
     {
-        Vector3 moveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
+        Vector3 moveDirection = ComputeCameraRelativeDirection(moveInput);
 
         if (moveDirection.magnitude > 1f)
         {
@@ -130,6 +148,36 @@ public abstract class CS_PlayerMoverBase : MonoBehaviour
         }
 
         return moveDirection * _mobilityData.moveSpeed * deltaTime;
+    }
+
+    /// <summary>
+    /// 2D入力方向(x=左右、y=前後)を、カメラの向きを正面としたワールド空間のXZ方向に変換する
+    /// カメラのforward/rightをY軸(高さ)成分を無視して水平面に投影して使用するため、
+    /// カメラが見下ろし/見上げのどちらでもプレイヤーの移動方向が傾かない
+    /// カメラ未設定時はプレイヤー自身のtransform.forward/rightを代わりに使用する
+    /// </summary>
+    protected Vector3 ComputeCameraRelativeDirection(Vector2 input2D)
+    {
+        Vector3 forward;
+        Vector3 right;
+
+        if (_cameraTransform != null)
+        {
+            forward = _cameraTransform.forward;
+            right = _cameraTransform.right;
+        }
+        else
+        {
+            forward = transform.forward;
+            right = transform.right;
+        }
+
+        forward.y = 0f;
+        right.y = 0f;
+        forward.Normalize();
+        right.Normalize();
+
+        return forward * input2D.y + right * input2D.x;
     }
 
     /// <summary>
