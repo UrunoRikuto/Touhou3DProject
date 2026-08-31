@@ -28,6 +28,8 @@ public class CS_BarrageSkillController : MonoBehaviour
 
     private void Update()
     {
+        _spellCardPlayer.transform.forward = transform.forward;  // プレイヤーの向きに合わせる
+
         // スキル入力がいずれか押されている場合は弾幕発動中とみなす
         isBarrageActive = _spellCardPlayer.isActive;
 
