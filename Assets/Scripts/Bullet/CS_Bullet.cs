@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// 弾の挙動を制御するコンポーネント。
@@ -11,16 +12,18 @@ public class CS_Bullet : MonoBehaviour
     private Vector3 _direction;
     private float _elapsedTime;
     private Action _returnCallback;
+    private List<string> _hitTagList = new List<string>(); // 衝突判定を行うタグのリスト
 
     /// <summary>
     /// 弾を初期化します。
     /// </summary>
-    public void Initialize(CSO_BulletData data, Vector3 position, Vector3 direction)
+    public void Initialize(CSO_BulletData data, Vector3 position, Vector3 direction, List<string> tagList)
     {
         _data = data;
         _direction = direction.normalized;
         _elapsedTime = 0f;
         transform.position = position;
+        _hitTagList = tagList;
     }
 
     /// <summary>
@@ -54,8 +57,9 @@ public class CS_Bullet : MonoBehaviour
     {
         // ここで敵への当たり判定やダメージ処理を行う
         // 現在は簡易実装のため、衝突時にプールに戻す
-        if (other.CompareTag("Enemy"))
+        if (_hitTagList.Contains(other.tag))
         {
+            // 衝突対象のタグがリストに含まれている場合のみ処理
             ReturnToPool();
         }
     }

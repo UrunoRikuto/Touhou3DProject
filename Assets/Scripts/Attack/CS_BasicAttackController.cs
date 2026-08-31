@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// 基本弾攻撃を常時自動発射するコンポーネント。
@@ -23,6 +24,9 @@ public class CS_BasicAttackController : MonoBehaviour
 
     [SerializeField]
     private float _fireInterval = 0.2f;
+
+    [SerializeField]
+    private List<string> _hitTagList = new List<string>() { "Enemy" };
 
     private float _fireTimer;
 
@@ -75,6 +79,6 @@ public class CS_BasicAttackController : MonoBehaviour
             return;
         }
 
-        _bulletPool.Fire(_bulletData, _fireOrigin.position, _aimController.aimDirection);
+        _bulletPool.Fire(_bulletData, _fireOrigin.position, _aimController.aimDirection, _hitTagList);
     }
 }

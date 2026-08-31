@@ -30,10 +30,10 @@ public class CS_BulletPool : MonoBehaviour
     /// <summary>
     /// 指定位置・方向に弾を1発発射します。
     /// </summary>
-    public void Fire(CSO_BulletData data, Vector3 position, Vector3 direction)
+    public void Fire(CSO_BulletData data, Vector3 position, Vector3 direction, List<string> hitTags)
     {
         CS_Bullet bullet = GetOrCreateBullet(data);
-        bullet.Initialize(data, position, direction);
+        bullet.Initialize(data, position, direction, hitTags);
         bullet.gameObject.SetActive(true);
     }
 
