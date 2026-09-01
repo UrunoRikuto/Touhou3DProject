@@ -297,7 +297,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53d711d419dfc424db1a139cb8ca77fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CS_SpellCardPlayer
-  _definition: {fileID: 11400000, guid: af58a9af2bf2cc549a01e6ad845db5e2, type: 2}
+  _definition:
+  - {fileID: 11400000, guid: af58a9af2bf2cc549a01e6ad845db5e2, type: 2}
+  - {fileID: 11400000, guid: 4f25539a93a1bb04c8a9258802a0ea61, type: 2}
+  _definitionIndex: 1
   _loop: 1
 --- !u!4 &1850390746
 Transform:

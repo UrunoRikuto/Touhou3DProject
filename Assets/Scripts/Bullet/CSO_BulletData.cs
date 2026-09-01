@@ -12,6 +12,11 @@ public class CSO_BulletData : ScriptableObject
     public float speed = 20f;
 
     /// <summary>
+    /// 弾の速度変化を制御するアニメーションカーブ。
+    /// </summary>
+    public AnimationCurve speedCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+
+    /// <summary>
     /// 弾の生存時間(秒)。
     /// </summary>
     public float lifetime = 5f;

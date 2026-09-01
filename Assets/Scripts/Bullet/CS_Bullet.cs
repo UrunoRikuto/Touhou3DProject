@@ -39,8 +39,11 @@ public class CS_Bullet : MonoBehaviour
         if (_data == null)
             return;
 
+        // 速度をカーブで制御する
+        float speedMultiplier = _data.speedCurve.Evaluate(_elapsedTime / _data.lifetime);
+
         // 移動
-        transform.position += _direction * _data.speed * Time.deltaTime;
+        transform.position += _direction * (_data.speed * speedMultiplier) * Time.deltaTime;
 
         // ライフタイム管理
         _elapsedTime += Time.deltaTime;

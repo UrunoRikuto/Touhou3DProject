@@ -18,6 +18,7 @@ using UnityEngine;
 public class CS_SpellCardPlayer : MonoBehaviour
 {
     [SerializeField] private List<CS_SpellCardDefinition> _definition;
+    [SerializeField] private int _definitionIndex;
     [SerializeField] private bool _loop;
 
     /// <summary>スペルカードが終了した(全エントリのendTimeを過ぎた、ループなしの場合)ときに発火。</summary>
@@ -38,8 +39,7 @@ public class CS_SpellCardPlayer : MonoBehaviour
     private float _totalDuration;
 
     /// <summary>定義済みのスペルカードを再生開始する。既に再生中なら一度停止してから作り直す。</summary>
-    [ContextMenu("Play")]
-    public void Play(int index = 0)
+    public void Play(int index)
     {
         Stop();
 
@@ -88,6 +88,12 @@ public class CS_SpellCardPlayer : MonoBehaviour
 
         _elapsedTime = 0f;
         _isActive = _runtimeEntries.Count > 0;
+    }
+
+    [ContextMenu("Play")]
+    public void TestPlay()
+    {
+        Play(_definitionIndex);
     }
 
     /// <summary>再生を止め、Instantiateした全バリエーションのインスタンスを破棄する。</summary>

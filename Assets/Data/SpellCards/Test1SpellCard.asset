@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a6d08d1d49530142bb9c141eceafdf7, type: 3}
-  m_Name: TestSpellCard
+  m_Name: Test1SpellCard
   m_EditorClassIdentifier: Assembly-CSharp::CS_SpellCardDefinition
   entries:
   - variationPrefab: {fileID: 259802419830562566, guid: 6be6e020ef333be479613d42871658e5, type: 3}
@@ -18,8 +18,8 @@ MonoBehaviour:
     endTime: 2
     angle: {x: 0, y: 0, z: 0}
     positionOffset: {x: 0, y: 0, z: 0}
-    overrideFireInterval: 0
-    fireIntervalOverride: 1
+    overrideFireInterval: 1
+    fireIntervalOverride: 0.2
   - variationPrefab: {fileID: 8255155640377712218, guid: 8f1973080fed6614d9cd511ccfe40f70, type: 3}
     startTime: 2
     endTime: 4
@@ -32,26 +32,26 @@ MonoBehaviour:
     endTime: 6
     angle: {x: 0, y: 90, z: 0}
     positionOffset: {x: 0, y: 0, z: 0}
-    overrideFireInterval: 0
-    fireIntervalOverride: 0.5
+    overrideFireInterval: 1
+    fireIntervalOverride: 0.2
   - variationPrefab: {fileID: 3628211386711691588, guid: 0431a0104c4b4294ba919ecbd2fabfc7, type: 3}
     startTime: 4
     endTime: 6
     angle: {x: 0, y: 270, z: 0}
     positionOffset: {x: 0, y: 0, z: 0}
-    overrideFireInterval: 0
-    fireIntervalOverride: 0.5
+    overrideFireInterval: 1
+    fireIntervalOverride: 0.2
   - variationPrefab: {fileID: 3628211386711691588, guid: 0431a0104c4b4294ba919ecbd2fabfc7, type: 3}
     startTime: 6
     endTime: 8
     angle: {x: 0, y: 0, z: 0}
     positionOffset: {x: 0, y: 0, z: 0}
-    overrideFireInterval: 0
-    fireIntervalOverride: 0.5
+    overrideFireInterval: 1
+    fireIntervalOverride: 0.2
   - variationPrefab: {fileID: 3628211386711691588, guid: 0431a0104c4b4294ba919ecbd2fabfc7, type: 3}
     startTime: 6
     endTime: 8
     angle: {x: 0, y: 180, z: 0}
     positionOffset: {x: 0, y: 0, z: 0}
-    overrideFireInterval: 0
-    fireIntervalOverride: 0.5
+    overrideFireInterval: 1
+    fireIntervalOverride: 0.2
